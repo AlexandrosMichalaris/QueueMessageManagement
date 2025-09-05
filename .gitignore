@@ -1,0 +1,30 @@
+# App config
+**/appsettings.json
+**/appsettings.*.json
+
+# Docker setup
+**/compose.yaml
+**/Dockerfile
+
+# Ignore build outputs
+bin/
+obj/
+
+.DS_Store
+.idea/
+
+# Ignore DLL files
+*.dll
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Optional: ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates

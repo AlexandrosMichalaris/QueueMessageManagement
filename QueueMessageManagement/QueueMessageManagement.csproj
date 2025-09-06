@@ -12,7 +12,6 @@
       <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.7" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
       <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
-      <PackageReference Include="StackExchange.Redis" Version="2.8.58" />
     </ItemGroup>
     
     <PropertyGroup>
@@ -21,7 +20,7 @@
         <Authors>AMichalaris</Authors>
         <Company>Michalaris</Company>
         <Description>Basic queue message management, easily defining consumer/producer</Description>
-        <RepositoryUrl></RepositoryUrl>
+        <RepositoryUrl>https://github.com/AlexandrosMichalaris/QueueMessageManagement</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 

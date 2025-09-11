@@ -1,5 +1,8 @@
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
+using QueueMessageManagement.Config;
+using QueueMessageManagement.Extentions;
 using QueueMessageManagement.Interfaces;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -10,12 +13,21 @@ public class RabbitMqDispatcher
 {
     private readonly IRabbitMqConnection _connection;
     private readonly IEnumerable<IConsumerBase> _consumers;
+    private readonly RabbitMqOptions _options;
 
-    public RabbitMqDispatcher(IRabbitMqConnection connection, IEnumerable<IConsumerBase> consumers)
+    #region Ctor
+
+    public RabbitMqDispatcher(
+        IRabbitMqConnection connection, 
+        IEnumerable<IConsumerBase> consumers,
+        IOptions<RabbitMqOptions> options)
     {
         _connection = connection;
         _consumers = consumers;
+        _options = options.Value;
     }
+
+    #endregion
 
     public async Task StartAllAsync(CancellationToken cancellationToken = default)
     {
@@ -34,10 +46,21 @@ public class RabbitMqDispatcher
                 .GetType()
                 .GetProperty(nameof(IConsumer<object>.QueueName))!
                 .GetValue(consumerObj)!;
+            
+            var queueOptions = _options.Queues.FirstOrDefault(q => q.QueueName == queueName)
+                ?? _options.DefaultQueue.CloneWith(queueName);
 
             // Create channel & ensure queue exists
             var channel = await _connection.CreateChannelAsync();
-            await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: cancellationToken);
+            
+            await channel.BasicQosAsync(0, queueOptions.PrefetchCount, false, cancellationToken);
+            
+            await channel.QueueDeclareAsync(
+                queue: queueOptions.QueueName, 
+                durable: queueOptions.Durable, 
+                exclusive: queueOptions.Exclusive, 
+                autoDelete: queueOptions.AutoDelete, 
+                cancellationToken: cancellationToken);
 
             var asyncConsumer = new AsyncEventingBasicConsumer(channel);
 

@@ -10,6 +10,9 @@
 bin/
 obj/
 
+# Ignore the excecutable console application that tests the Library
+Exec/
+
 .DS_Store
 .idea/
 

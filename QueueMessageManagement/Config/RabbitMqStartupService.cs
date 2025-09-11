@@ -18,7 +18,7 @@ public class RabbitMqStartupService : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await _connection.ConnectAsync();
-        await _dispatcher.StartAllAsync();
+        await _dispatcher.StartAllAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

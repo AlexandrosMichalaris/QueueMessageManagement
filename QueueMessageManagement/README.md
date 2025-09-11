@@ -68,7 +68,7 @@ public class FileUploadService
 }
 ```
 
-##Consumer
+## Consumer
 To consume a message, inherit from the ConsumerBase<T> generic class and override the QueueName property and ExecuteAsync method.
 ```csharp
 public class TestConsumer : ConsumerBase<MyCustomMessage>

@@ -2,12 +2,11 @@ using Data_Center.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using QueueMessageManagement.Config;
+using QueueMessageManagement.Consumer;
 using QueueMessageManagement.Interfaces;
 using QueueMessageManagement.Producer;
-using QueueMessageManagement;
-using QueueMessageManagement.Consumer;
 
-namespace QueueMessageManagement.Extentions;
+namespace QueueMessageManagement.Extensions;
 
 public static class ServiceCollectionExtension
 {

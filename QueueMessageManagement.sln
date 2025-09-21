@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueueMessageManagement", "QueueMessageManagement\QueueMessageManagement.csproj", "{95EC0E30-CC86-4239-A879-CDDE4EE01BA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exec", "Exec\Exec.csproj", "{833EE320-C10C-496A-9986-D02C2286BA65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exec", "Exec\Exec.csproj", "{57BDE2AB-9D2C-432B-8B84-2B6B39853161}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		{95EC0E30-CC86-4239-A879-CDDE4EE01BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95EC0E30-CC86-4239-A879-CDDE4EE01BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95EC0E30-CC86-4239-A879-CDDE4EE01BA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{833EE320-C10C-496A-9986-D02C2286BA65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{833EE320-C10C-496A-9986-D02C2286BA65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{833EE320-C10C-496A-9986-D02C2286BA65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{833EE320-C10C-496A-9986-D02C2286BA65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57BDE2AB-9D2C-432B-8B84-2B6B39853161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57BDE2AB-9D2C-432B-8B84-2B6B39853161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57BDE2AB-9D2C-432B-8B84-2B6B39853161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57BDE2AB-9D2C-432B-8B84-2B6B39853161}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -18,6 +18,9 @@ dotnet add package QueueMessageManagement
 ## Setup package in your project
 
 1. Add RabbitMq configuration in appsettings.json
+
+Starting from version 1.2.0, you can define configurations for your RabbitMQ connection and individual queues directly in appsettings.json. You can also set default queue settings, which will be applied to any queue that doesn’t have specific configurations.
+
 ```json
 {
   "RabbitMq": {
@@ -26,9 +29,28 @@ dotnet add package QueueMessageManagement
     "UserName": "guest",
     "Password": "guest",
     "VirtualHost": "/"
-  }
+  },
+  "DefaultQueue": {
+    "Durable": true,
+    "PrefetchCount": 5,
+    "RetryCount": 3
+  },
+  "Queues": [
+    {
+      "QueueName": "file-chunks",
+      "Durable": true,
+      "PrefetchCount": 10
+    },
+    {
+      "QueueName": "file-reassembly",
+      "Durable": false,
+      "PrefetchCount": 1
+    }
+  ]
 }
 ```
+
+Note: If no configuration is provided, default values will automatically be used for both the RabbitMQ connection and the queues.
 
 2. Register library in program.cs
 ```csharp

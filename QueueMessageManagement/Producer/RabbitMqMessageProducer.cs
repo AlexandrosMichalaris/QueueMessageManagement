@@ -37,6 +37,8 @@ public class RabbitMqProducer : IProducer
         };
 
         var body = JsonSerializer.SerializeToUtf8Bytes(message);
+        
+        //TODO: Add exchange 
         await channel.BasicPublishAsync(exchange: "", routingKey: queueName, mandatory: false, basicProperties: props, body: body, cancellationToken: cancellationToken);
     }
 

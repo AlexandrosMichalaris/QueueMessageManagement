@@ -24,9 +24,9 @@ public class RabbitMqConnection : IRabbitMqConnection
         };
     }
 
-    public async Task ConnectAsync()
+    public async Task ConnectAsync(CancellationToken cancellationToken = default)
     {
-        _connection = await _factory.CreateConnectionAsync();
+        _connection = await _factory.CreateConnectionAsync(cancellationToken);
     }
 
     public async Task<IChannel> CreateChannelAsync()

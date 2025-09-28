@@ -16,11 +16,11 @@
     
     <PropertyGroup>
         <PackageId>rmq.message.management</PackageId>
-        <Version>1.0.1</Version>
+        <Version>1.2.0</Version>
         <Authors>AMichalaris</Authors>
         <Company>Michalaris</Company>
         <Description>Basic queue message management, easily defining consumer/producer</Description>
-        <PackageTags>rabbitMq;messageHandler;abstractionLayer</PackageTags>
+        <PackageTags>rabbitMq;abstractionLayer;consumer-producer;messageHandler</PackageTags>
         <RepositoryUrl>https://github.com/AlexandrosMichalaris/QueueMessageManagement</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -29,5 +29,4 @@
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
-
 </Project>

@@ -5,6 +5,7 @@ using QueueMessageManagement.Config;
 using QueueMessageManagement.Consumer;
 using QueueMessageManagement.Interfaces;
 using QueueMessageManagement.Producer;
+using QueueMessageManagement.Topology;
 
 namespace QueueMessageManagement.Extensions;
 
@@ -21,7 +22,13 @@ public static class ServiceCollectionExtension
         // Core Services
         services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
         services.AddSingleton<IProducer, RabbitMqProducer>();
-        services.AddSingleton<RabbitMqDispatcher>();
+        services.AddSingleton<IRabbitMqDispatcher, RabbitMqDispatcher>();
+
+        services.AddSingleton<IRabbitMqTopology, RabbitMqTopology>();
+
+        services.AddSingleton<IQueueConfigurator, QueueConfigurator>();
+        services.AddSingleton<IConsumerFactory, ConsumerFactory>();
+        
 
         return services;
     }

@@ -18,4 +18,6 @@ public static class DefaultOptions
     
     // Queue message options
     public const int DefaultRetryCount = 3;
+    
+    public const string DefaultExchangeType = "direct";
 }

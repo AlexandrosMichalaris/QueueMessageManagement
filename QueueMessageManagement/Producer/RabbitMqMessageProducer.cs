@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using QueueMessageManagement.Interfaces;
 using QueueMessageManagement.Extentions;
@@ -23,24 +24,33 @@ public class RabbitMqProducer : IProducer
         _channel = await _connection.CreateChannelAsync();
         return _channel;
     }
-
+    
     public async Task SendAsync<T>(string queueName, T message, CancellationToken cancellationToken = default)
     {
-        var channel = await GetOrCreateChannelAsync();
+        var channel = await _connection.CreateChannelAsync();
+        var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 
-        await channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: cancellationToken);
-
-        var props = new BasicProperties
-        {
-            Persistent = true,
-            
-        };
-
-        var body = JsonSerializer.SerializeToUtf8Bytes(message);
-        
-        //TODO: Add exchange 
-        await channel.BasicPublishAsync(exchange: "", routingKey: queueName, mandatory: false, basicProperties: props, body: body, cancellationToken: cancellationToken);
+        await channel.BasicPublishAsync(exchange: string.Empty, routingKey: queueName, mandatory: false, basicProperties: this.GetBasicProperties(), body: body, cancellationToken: cancellationToken);
     }
+
+    public async Task SendToDirectExchangeAsync<T>(string exchangeName, string routingKey, T message, CancellationToken cancellationToken = default)
+    {
+        var channel = await _connection.CreateChannelAsync();
+        var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+
+        await channel.BasicPublishAsync(exchange: exchangeName, routingKey: routingKey, mandatory: false, basicProperties: this.GetBasicProperties(), body: body, cancellationToken: cancellationToken);
+    }
+
+    public async Task SendToFanoutExchangeAsync<T>(string exchangeName, T message, CancellationToken cancellationToken = default)
+    {
+        var channel = await _connection.CreateChannelAsync();
+        var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+
+        // routingKey is ignored in fanout exchange
+        await channel.BasicPublishAsync(exchange: exchangeName, routingKey: string.Empty, mandatory: false, basicProperties: this.GetBasicProperties(), body: body, cancellationToken: cancellationToken);
+    }
+
+    private BasicProperties GetBasicProperties() => new BasicProperties() { Persistent = true };
 
     public async ValueTask DisposeAsync()
     {

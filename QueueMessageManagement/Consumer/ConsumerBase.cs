@@ -9,7 +9,7 @@ namespace QueueMessageManagement.Consumer;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public abstract class ConsumerBase<T> : IConsumer<T> where T : class
-{   
+{
     public abstract string QueueName { get; }
 
     public abstract Task ExecuteAsync(T message, CancellationToken cancellationToken);

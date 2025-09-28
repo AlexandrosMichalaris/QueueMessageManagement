@@ -7,18 +7,21 @@ namespace Data_Center.Configuration;
 public class RabbitMqStartupService : IHostedService
 {
     private readonly IRabbitMqConnection _connection;
-    private readonly RabbitMqDispatcher _dispatcher;
+    private readonly IRabbitMqDispatcher _dispatcher;
+    private readonly IRabbitMqTopology _topology;
 
-    public RabbitMqStartupService(IRabbitMqConnection connection, RabbitMqDispatcher dispatcher)
+    public RabbitMqStartupService(IRabbitMqConnection connection, IRabbitMqDispatcher dispatcher, IRabbitMqTopology topology)
     {
         _connection = connection;
         _dispatcher = dispatcher;
+        _topology = topology;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await _connection.ConnectAsync();
+        await _connection.ConnectAsync(cancellationToken);
         await _dispatcher.StartAllAsync(cancellationToken);
+        await _topology.EnsureTopologyAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

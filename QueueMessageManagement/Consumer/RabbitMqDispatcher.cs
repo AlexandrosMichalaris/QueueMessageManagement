@@ -9,86 +9,56 @@ using RabbitMQ.Client.Events;
 
 namespace QueueMessageManagement.Consumer;
 
-public class RabbitMqDispatcher
+public class RabbitMqDispatcher : IRabbitMqDispatcher
 {
     private readonly IRabbitMqConnection _connection;
     private readonly IEnumerable<IConsumerBase> _consumers;
     private readonly RabbitMqOptions _options;
+    private readonly IQueueConfigurator _queueConfigurator;
+    private readonly IConsumerFactory _consumerFactory;
 
     #region Ctor
 
     public RabbitMqDispatcher(
         IRabbitMqConnection connection, 
         IEnumerable<IConsumerBase> consumers,
-        IOptions<RabbitMqOptions> options)
+        IOptions<RabbitMqOptions> options,
+        IQueueConfigurator queueConfigurator,
+        IConsumerFactory consumerFactory)
     {
         _connection = connection;
         _consumers = consumers;
         _options = options.Value;
+        _queueConfigurator = queueConfigurator;
+        _consumerFactory = consumerFactory;
     }
 
     #endregion
 
     public async Task StartAllAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var consumerObj in _consumers)
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        foreach (var consumer in _consumers)
         {
-            // Find IConsumer<T> implemented by this object
-            var consumerInterface = consumerObj.GetType()
-                .GetInterfaces()
-                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConsumer<>));
+            var metadata = ConsumerMetadata.From(consumer);
+            if (metadata == null) continue;
 
-            if (consumerInterface == null)
-                continue; // Not a valid consumer
-
-            var messageType = consumerInterface.GetGenericArguments()[0];
-            var queueName = (string)consumerObj
-                .GetType()
-                .GetProperty(nameof(IConsumer<object>.QueueName))!
-                .GetValue(consumerObj)!;
-            
-            var queueOptions = _options.Queues.FirstOrDefault(q => q.QueueName == queueName)
-                ?? _options.DefaultQueue.CloneWith(queueName);
-
-            // Create channel & ensure queue exists
             var channel = await _connection.CreateChannelAsync();
-            
-            await channel.BasicQosAsync(0, queueOptions.PrefetchCount, false, cancellationToken);
-            
-            await channel.QueueDeclareAsync(
-                queue: queueOptions.QueueName, 
-                durable: queueOptions.Durable, 
-                exclusive: queueOptions.Exclusive, 
-                autoDelete: queueOptions.AutoDelete, 
-                cancellationToken: cancellationToken);
 
-            var asyncConsumer = new AsyncEventingBasicConsumer(channel);
-
-            asyncConsumer.ReceivedAsync += async (sender, ea) =>
+            try
             {
-                // ea is BasicDeliverEventArgs
-                var bodyBytes = ea.Body.ToArray(); // ReadOnlyMemory<byte> -> byte[]
-                var json = Encoding.UTF8.GetString(bodyBytes);
+                var queueOptions = _queueConfigurator.ResolveQueueOptions(metadata.QueueName);
+                await _queueConfigurator.ConfigureQueueAsync(channel, queueOptions, cancellationToken);
 
-                try
-                {
-                    var message = JsonSerializer.Deserialize(json, messageType);
-
-                    // Dynamically call ExecuteAsync(message, cancellationToken)
-                    var executeMethod = consumerInterface.GetMethod(nameof(IConsumer<object>.ExecuteAsync))!;
-                    var task = (Task)executeMethod.Invoke(consumerObj, new object[] { message!, cancellationToken })!;
-                    await task;
-
-                    await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error processing message from {queueName}: {ex.Message}");
-                    await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false, cancellationToken: cancellationToken);
-                }
-            };
-
-            await channel.BasicConsumeAsync(queue: queueName, autoAck: false, consumer: asyncConsumer, cancellationToken: cancellationToken);
+                var asyncConsumer = await _consumerFactory.Create(channel, consumer, metadata, cancellationToken);
+                await channel.BasicConsumeAsync(queueOptions.QueueName, false, asyncConsumer, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    $"Error initializing consumer for queue '{metadata.QueueName}'", ex);
+            }
         }
     }
 }

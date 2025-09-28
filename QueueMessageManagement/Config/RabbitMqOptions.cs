@@ -5,17 +5,19 @@ namespace QueueMessageManagement.Config;
 /// </summary>
 public class RabbitMqOptions
 {
-    public string HostName { get; set; } = DefaultOptions.DefaultHostName;
+    public string HostName { get; init; } = DefaultOptions.DefaultHostName;
     
-    public string VirtualHost { get; set; } = DefaultOptions.DefaultVirtualHost;
+    public string VirtualHost { get; init; } = DefaultOptions.DefaultVirtualHost;
     
-    public string UserName { get; set; } = DefaultOptions.DefaultUserName;
+    public string UserName { get; init; } = DefaultOptions.DefaultUserName;
     
-    public string Password { get; set; } = DefaultOptions.DefaultPassword;
+    public string Password { get; init; } = DefaultOptions.DefaultPassword;
     
-    public int Port { get; set; } = DefaultOptions.DefaultPort;
+    public int Port { get; init; } = DefaultOptions.DefaultPort;
 
-    public QueueOptions DefaultQueue { get; set; } = new();
-
-    public List<QueueOptions> Queues { get; set; } = [];
+    public QueueOptions DefaultQueue { get; init; } = new();
+    
+    public IEnumerable<ExchangeOptions> Exchanges { get; init; } = Array.Empty<ExchangeOptions>();
+    
+    public IEnumerable<QueueOptions> QueueConfiguration { get; init; } = Array.Empty<QueueOptions>();
 }

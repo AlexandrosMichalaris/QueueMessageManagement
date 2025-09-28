@@ -4,7 +4,7 @@ namespace QueueMessageManagement.Interfaces;
 
 public interface IRabbitMqConnection : IAsyncDisposable
 {
-    Task ConnectAsync();
+    Task ConnectAsync(CancellationToken cancellationToken = default);
     
     Task<IChannel> CreateChannelAsync();
 }
